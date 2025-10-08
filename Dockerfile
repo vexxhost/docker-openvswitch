@@ -60,7 +60,7 @@ RUN apt-get update && \
         openssl \
         quilt \
         python3
-ARG OVS_VERSION=3.3.6
+ARG OVS_VERSION=3.6.0
 ADD https://www.openvswitch.org/releases/openvswitch-${OVS_VERSION}.tar.gz /src
 RUN --network=none tar -xf /src/openvswitch-${OVS_VERSION}.tar.gz -C /src --strip-components=1 \
         && rm /src/openvswitch-${OVS_VERSION}.tar.gz
