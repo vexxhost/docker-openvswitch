@@ -2,5 +2,33 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>vexxhost/.github"
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": [
+        "Dockerfile"
+      ],
+      "matchStrings": [
+        "ARG DPDK_VERSION=(?<currentValue>.*)"
+      ],
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "DPDK/dpdk",
+      "versioningTemplate": "semver",
+      "extractVersionTemplate": "^v(?<version>.*)$",
+      "updateType": "patch"
+    },
+    {
+      "fileMatch": [
+        "Dockerfile"
+      ],
+      "matchStrings": [
+        "ARG OVS_VERSION=(?<currentValue>.*)"
+      ],
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "openvswitch/ovs",
+      "versioningTemplate": "semver",
+      "extractVersionTemplate": "^v(?<version>.*)$",
+      "updateType": "patch"
+    }
   ]
 }
