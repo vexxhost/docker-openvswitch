@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: © 2025 VEXXHOST, Inc.
 # SPDX-License-Identifier: Apache-2.0
 
-ARG FROM=debian:trixie-20250929
+ARG FROM=debian:13.1@sha256:fd8f5a1df07b5195613e4b9a0b6a947d3772a151b81975db27d47f093f60c6e6
 
 FROM ${FROM} AS builder
 WORKDIR /src
