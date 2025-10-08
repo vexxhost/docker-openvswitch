@@ -17,19 +17,19 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v5
-      - uses: docker/metadata-action@v5
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5
         id: meta
         with:
           images: ghcr.io/vexxhost/openvswitch
-      - uses: depot/setup-action@v1
-      - uses: docker/login-action@v3
+      - uses: depot/setup-action@b0b1ea4f69e92ebf5dea3f8713a1b0c37b2126a5 # v1
+      - uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
         if: ${{ github.event_name != 'pull_request' }}
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: depot/build-push-action@v1
+      - uses: depot/build-push-action@9785b135c3c76c33db102e45be96a25ab55cd507 # v1
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
