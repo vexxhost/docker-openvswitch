@@ -1,0 +1,40 @@
+From: Mohammed Naser <mnaser@vexxhost.com>
+Date: Mon, 28 Jul 2025 12:00:00 -0400
+Subject: [PATCH] dpif-netdev: Increase MAX_RECIRC_DEPTH to 10
+
+In complex OVN scenarios with OpenStack, particularly with Palo Alto
+firewalls using virtual ports in HA mode, the recirculation depth can
+exceed 8. This occurs when traffic hairpins through the firewall with
+multiple NAT operations across different security zones.
+
+This follows the pattern of previous increases:
+- Commit 3f9d3836d: Increased from 5 to 6 for OVN gateway scenarios
+- Commit 5df46a44e: Increased from 6 to 8 for OVN LB + SNAT scenarios
+
+The specific failing flow chain involves:
+- Initial NAT in zone 31
+- NAT in zone 37 with SNAT
+- Multiple zone transitions for security isolation
+- DNAT for floating IPs
+- Final tunnel encapsulation
+
+Signed-off-by: Mohammed Naser <mnaser@vexxhost.com>
+---
+ lib/dpif-netdev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/dpif-netdev.c b/lib/dpif-netdev.c
+index 1234567..abcdefg 100644
+--- a/lib/dpif-netdev.c
++++ b/lib/dpif-netdev.c
+@@ -99,7 +99,7 @@ VLOG_DEFINE_THIS_MODULE(dpif_netdev);
+
+ #define FLOW_DUMP_MAX_BATCH 50
+ /* Use per thread recirc_depth to prevent recirculation loop. */
+-#define MAX_RECIRC_DEPTH 8
++#define MAX_RECIRC_DEPTH 10
+ DEFINE_STATIC_PER_THREAD_DATA(uint32_t, recirc_depth, 0)
+
+ /* Use instant packet send by default. */
+--
+2.34.1
