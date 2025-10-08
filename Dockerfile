@@ -28,7 +28,7 @@ RUN apt-get update && \
     apt-get install --no-install-recommends -y \
         meson \
         python3-pyelftools
-ARG DPDK_VERSION=23.11.5
+ARG DPDK_VERSION=24.11.3
 ADD https://fast.dpdk.org/rel/dpdk-${DPDK_VERSION}.tar.xz /src
 RUN --network=none tar -xf /src/dpdk-${DPDK_VERSION}.tar.xz -C /src --strip-components=1 \
         && rm /src/dpdk-${DPDK_VERSION}.tar.xz
