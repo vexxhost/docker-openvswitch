@@ -112,7 +112,5 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 COPY --from=openvswitch /out /
-
-# TODO: create/check if user 42424 is needed
-# usermod -u 42424 openvswitch
-# groupmod -g 42424 openvswitch
+RUN groupadd -r -g 42424 openvswitch && \
+	useradd -r -g openvswitch -u 999 openvswitch
