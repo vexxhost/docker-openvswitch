@@ -31,12 +31,10 @@
   ],
   "packageRules": [
     {
-      "matchDepNames": [
-        "DPDK/dpdk",
-        "openvswitch/ovs"
-      ],
+      "enabled": false,
       "updateTypes": [
-        "patch"
+        "major",
+        "minor"
       ]
     }
   ]
