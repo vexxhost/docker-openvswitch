@@ -14,8 +14,7 @@
       "datasourceTemplate": "github-tags",
       "depNameTemplate": "DPDK/dpdk",
       "versioningTemplate": "semver",
-      "extractVersionTemplate": "^v(?<version>.*)$",
-      "updateType": "patch"
+      "extractVersionTemplate": "^v(?<version>.*)$"
     },
     {
       "fileMatch": [
@@ -27,8 +26,18 @@
       "datasourceTemplate": "github-tags",
       "depNameTemplate": "openvswitch/ovs",
       "versioningTemplate": "semver",
-      "extractVersionTemplate": "^v(?<version>.*)$",
-      "updateType": "patch"
+      "extractVersionTemplate": "^v(?<version>.*)$"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchDepNames": [
+        "DPDK/dpdk",
+        "openvswitch/ovs"
+      ],
+      "updateTypes": [
+        "patch"
+      ]
     }
   ]
 }
