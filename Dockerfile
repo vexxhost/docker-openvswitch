@@ -90,6 +90,8 @@ RUN --network=none make install DESTDIR=/out
 
 FROM ${FROM}
 ADD --chmod=755 https://github.com/krallin/tini/releases/download/v0.19.0/tini /tini
+RUN groupadd -r -g 42424 openvswitch && \
+	useradd -r -g openvswitch -u 999 openvswitch
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
         iptables \
@@ -112,5 +114,4 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 COPY --from=openvswitch /out /
-RUN groupadd -r -g 42424 openvswitch && \
-	useradd -r -g openvswitch -u 999 openvswitch
+USER openvswitch
