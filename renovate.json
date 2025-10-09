@@ -3,9 +3,23 @@
   "extends": [
     "local>vexxhost/.github"
   ],
-  "regexManagers": [
+  "customManagers": [
     {
-      "fileMatch": [
+      "customType": "regex",
+      "managerFilePatterns": [
+        "Dockerfile"
+      ],
+      "matchStrings": [
+        "ARG OVS_COMMIT=(?<currentDigest>.*)"
+      ],
+      "datasourceTemplate": "git-refs",
+      "depNameTemplate": "openvswitch/ovs",
+      "currentValueTemplate": "branch-3.3",
+      "packageNameTemplate": "https://github.com/openvswitch/ovs"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
         "Dockerfile"
       ],
       "matchStrings": [
@@ -15,25 +29,13 @@
       "depNameTemplate": "DPDK/dpdk",
       "versioningTemplate": "semver",
       "extractVersionTemplate": "^v(?<version>.*)$"
-    },
-    {
-      "fileMatch": [
-        "Dockerfile"
-      ],
-      "matchStrings": [
-        "ARG OVS_COMMIT=(?<currentValue>.*)"
-      ],
-      "datasourceTemplate": "github-commits",
-      "depNameTemplate": "openvswitch/ovs",
-      "branchName": "branch-3.3"
     }
   ],
   "packageRules": [
     {
       "enabled": false,
       "matchDepNames": [
-        "DPDK/dpdk",
-        "openvswitch/ovs"
+        "DPDK/dpdk"
       ],
       "updateTypes": [
         "major",
