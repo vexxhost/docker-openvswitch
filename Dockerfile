@@ -54,22 +54,24 @@ RUN --network=none meson install -C build --destdir /out
 FROM builder AS openvswitch
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
+        autoconf \
+        automake \
         g++ \
         libcap-ng-dev \
+        libtool \
         make \
         openssl \
-        quilt \
-        python3
+        python3 \
+        quilt
 ARG OVS_VERSION=3.3.6
-ADD https://www.openvswitch.org/releases/openvswitch-${OVS_VERSION}.tar.gz /src
-RUN --network=none tar -xf /src/openvswitch-${OVS_VERSION}.tar.gz -C /src --strip-components=1 \
-        && rm /src/openvswitch-${OVS_VERSION}.tar.gz
+ADD https://github.com/openvswitch/ovs.git#refs/tags/v${OVS_VERSION} /src
 COPY patches /patches
 RUN --network=none \
     QUILT_PATCHES=/patches \
     QUILT_PC=/src/.pc \
     QUILT_PATCH_OPTS="--unified -p1" \
     quilt push -a --fuzz=0 --leave-rejects
+RUN --network=none ./boot.sh
 COPY --from=dpdk /out /
 ARG TARGETARCH
 RUN --network=none case "${TARGETARCH}" in \
