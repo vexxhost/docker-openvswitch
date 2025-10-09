@@ -109,6 +109,7 @@ RUN apt-get update && \
         libjansson4 \
         libnuma1 \
         libpcap0.8t64 \
+        iproute2 \
         libssl3t64 \
         libxdp1 \
         python3-netifaces \
