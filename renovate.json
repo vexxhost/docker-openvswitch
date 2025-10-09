@@ -3,6 +3,9 @@
   "extends": [
     "local>vexxhost/.github"
   ],
+  "prBodyDefinitions": {
+    "GitHub Links": "[Compare changes](https://github.com/{{{depName}}}/compare/{{{currentDigest}}}...{{{newDigest}}})"
+  },
   "customManagers": [
     {
       "customType": "regex",
@@ -32,6 +35,20 @@
     }
   ],
   "packageRules": [
+    {
+      "matchDatasources": [
+        "git-refs"
+      ],
+      "matchPackageNames": [
+        "https://github.com/**"
+      ],
+      "prBodyColumns": [
+        "Package",
+        "Update",
+        "Change",
+        "GitHub Links"
+      ]
+    },
     {
       "enabled": false,
       "matchDepNames": [
