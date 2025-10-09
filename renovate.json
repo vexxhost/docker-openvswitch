@@ -21,12 +21,11 @@
         "Dockerfile"
       ],
       "matchStrings": [
-        "ARG OVS_VERSION=(?<currentValue>.*)"
+        "ARG OVS_COMMIT=(?<currentValue>.*)"
       ],
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-commits",
       "depNameTemplate": "openvswitch/ovs",
-      "versioningTemplate": "semver",
-      "extractVersionTemplate": "^v(?<version>.*)$"
+      "branchName": "branch-3.3"
     }
   ],
   "packageRules": [
