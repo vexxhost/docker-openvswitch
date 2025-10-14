@@ -49,7 +49,7 @@ RUN --network=none \
         build
 RUN --network=none ninja -C build
 RUN --network=none meson test -C build --suite fast-tests
-RUN --network=none meson install -C build --destdir /out
+RUN --network=none meson install -C build --destdir /out/dpdk
 
 FROM builder AS openvswitch
 WORKDIR /src/ovs
@@ -73,7 +73,7 @@ RUN --network=none \
     QUILT_PATCH_OPTS="--unified -p1" \
     quilt push -a --fuzz=0 --leave-rejects
 RUN --network=none ./boot.sh
-COPY --from=dpdk /out /
+COPY --from=dpdk /out/dpdk /
 RUN --network=none \
     ./configure \
         --prefix=/usr \
@@ -82,7 +82,7 @@ RUN --network=none \
         --with-dpdk=static
 RUN --network=none make -j$(nproc)
 RUN --network=none make check TESTSUITEFLAGS=-j$(nproc)
-RUN --network=none make install DESTDIR=/out
+RUN --network=none make install DESTDIR=/out/ovs
 
 FROM ${FROM}
 ADD --chmod=755 https://github.com/krallin/tini/releases/download/v0.19.0/tini /tini
@@ -111,4 +111,4 @@ RUN apt-get update && \
         tcpdump && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-COPY --from=openvswitch /out /
+COPY --from=openvswitch /out/ovs /
