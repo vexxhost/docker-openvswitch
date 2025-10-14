@@ -25,13 +25,14 @@ RUN apt-get update && \
         xz-utils
 
 FROM builder AS dpdk
+WORKDIR /src/dpdk
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
         meson \
         python3-pyelftools
 ARG DPDK_VERSION=23.11.5
 ADD https://fast.dpdk.org/rel/dpdk-${DPDK_VERSION}.tar.xz /src
-RUN --network=none tar -xf /src/dpdk-${DPDK_VERSION}.tar.xz -C /src --strip-components=1 \
+RUN --network=none tar -xf /src/dpdk-${DPDK_VERSION}.tar.xz -C /src/dpdk --strip-components=1 \
         && rm /src/dpdk-${DPDK_VERSION}.tar.xz
 RUN --network=none \
     meson setup \
@@ -51,6 +52,7 @@ RUN --network=none meson test -C build --suite fast-tests
 RUN --network=none meson install -C build --destdir /out
 
 FROM builder AS openvswitch
+WORKDIR /src/ovs
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
         autoconf \
@@ -63,7 +65,7 @@ RUN apt-get update && \
         python3 \
         quilt
 ARG OVS_COMMIT=70b8c0e4cd861e90f4cd4b860efa80dedbda9fc0
-ADD https://github.com/openvswitch/ovs.git#${OVS_COMMIT} /src
+ADD https://github.com/openvswitch/ovs.git#${OVS_COMMIT} /src/ovs
 COPY patches /patches
 RUN --network=none \
     QUILT_PATCHES=/patches \
