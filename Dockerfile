@@ -33,19 +33,16 @@ ADD https://fast.dpdk.org/rel/dpdk-${DPDK_VERSION}.tar.xz /src
 RUN --network=none tar -xf /src/dpdk-${DPDK_VERSION}.tar.xz -C /src --strip-components=1 \
         && rm /src/dpdk-${DPDK_VERSION}.tar.xz
 ARG TARGETARCH
-RUN --network=none case "${TARGETARCH}" in \
-        amd64) CPU_SET="x86-64-v2" ;; \
-        arm64) CPU_SET="armv8-a" ;; \
-        arm) CPU_SET="armv7-a" ;; \
-        *) CPU_SET="generic" ;; \
-    esac && \
+RUN --network=none \
     meson setup \
         --prefix=/usr \
         --libdir=lib/$(gcc -print-multiarch) \
         --buildtype=release \
         -Dauto_features=enabled \
         -Ddefault_library=static \
-        -Dcpu_instruction_set=${CPU_SET} \
+        -Dcpu_instruction_set=generic \
+        -Dmax_ethports=1024 \
+        -Dmax_numa_nodes=8 \
         build
 RUN --network=none ninja -C build
 RUN --network=none meson test -C build --suite fast-tests
@@ -74,18 +71,12 @@ RUN --network=none \
 RUN --network=none ./boot.sh
 COPY --from=dpdk /out /
 ARG TARGETARCH
-RUN --network=none case "${TARGETARCH}" in \
-        amd64) MARCH="x86-64-v2" ;; \
-        arm64) MARCH="armv8-a" ;; \
-        arm) MARCH="armv7-a" ;; \
-        *) MARCH="native" ;; \
-    esac && \
+RUN --network=none \
     ./configure \
         --prefix=/usr \
         --localstatedir=/var \
         --sysconfdir=/etc \
-        --with-dpdk=static \
-        CFLAGS="-O2 -march=${MARCH}"
+        --with-dpdk=static
 RUN --network=none make -j$(nproc)
 RUN --network=none make check TESTSUITEFLAGS=-j$(nproc)
 RUN --network=none make install DESTDIR=/out
