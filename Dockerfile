@@ -37,8 +37,10 @@ RUN --network=none \
     meson setup \
         --prefix=/usr \
         --libdir=lib/$(gcc -print-multiarch) \
-        --buildtype=release \
-        -Dauto_features=enabled \
+        --buildtype=plain \
+        -Ddisable_apps="*" \
+        -Denable_libs="bbdev,bitratestats,bpf,cmdline,cryptodev,dmadev,gro,gso,hash,ip_frag,latencystats,member,meter,metrics,pcapng,pdump,security,stack,vhost" \
+        -Denable_drivers="baseband/acc,bus/auxiliary,bus/pci,bus/vdev,bus/vmbus,common/iavf,common/mlx5,common/nfp,mempool/ring,net/bnxt,net/e1000,net/enic,net/failsafe,net/i40e,net/iavf,net/ice,net/ixgbe,net/mlx5,net/netvsc,net/nfp,net/qede,net/ring,net/tap,net/vdev_netvsc,net/vhost,net/virtio" \
         -Ddefault_library=static \
         -Dcpu_instruction_set=generic \
         -Dmax_ethports=1024 \
