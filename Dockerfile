@@ -33,7 +33,6 @@ ARG DPDK_VERSION=23.11.5
 ADD https://fast.dpdk.org/rel/dpdk-${DPDK_VERSION}.tar.xz /src
 RUN --network=none tar -xf /src/dpdk-${DPDK_VERSION}.tar.xz -C /src --strip-components=1 \
         && rm /src/dpdk-${DPDK_VERSION}.tar.xz
-ARG TARGETARCH
 RUN --network=none \
     meson setup \
         --prefix=/usr \
@@ -71,7 +70,6 @@ RUN --network=none \
     quilt push -a --fuzz=0 --leave-rejects
 RUN --network=none ./boot.sh
 COPY --from=dpdk /out /
-ARG TARGETARCH
 RUN --network=none \
     ./configure \
         --prefix=/usr \
