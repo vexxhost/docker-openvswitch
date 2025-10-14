@@ -19,6 +19,7 @@ RUN apt-get update && \
         libnuma-dev \
         libpcap-dev \
         libssl-dev \
+        libunbound-dev \
         libxdp-dev \
         pkg-config \
         xz-utils
@@ -87,10 +88,11 @@ RUN groupadd -r -g 42424 openvswitch && \
 	useradd -r -g openvswitch -u 42424 openvswitch
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
+        iproute2 \
         iptables \
         jq \
-        libatomic1 \
         libarchive13t64 \
+        libatomic1 \
         libbpf1 \
         libbsd0 \
         libc6 \
@@ -100,8 +102,8 @@ RUN apt-get update && \
         libjansson4 \
         libnuma1 \
         libpcap0.8t64 \
-        iproute2 \
         libssl3t64 \
+        libunbound8 \
         libxdp1 \
         python3-netifaces \
         tcpdump && \
