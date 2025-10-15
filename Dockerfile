@@ -111,4 +111,7 @@ RUN apt-get update && \
         tcpdump && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+ARG TARGETOS
+ARG TARGETARCH
+ADD --chmod=755 https://github.com/vexxhost/ovsinit/releases/download/v0.1.0/ovsinit_v0.1.0_${TARGETOS}_${TARGETARCH} /usr/bin/ovsinit
 COPY --from=openvswitch /out/ovs /
