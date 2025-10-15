@@ -19,39 +19,40 @@ RUN apt-get update && \
         libnuma-dev \
         libpcap-dev \
         libssl-dev \
+        libunbound-dev \
         libxdp-dev \
         pkg-config \
         xz-utils
 
 FROM builder AS dpdk
+WORKDIR /src/dpdk
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
         meson \
         python3-pyelftools
 ARG DPDK_VERSION=23.11.5
 ADD https://fast.dpdk.org/rel/dpdk-${DPDK_VERSION}.tar.xz /src
-RUN --network=none tar -xf /src/dpdk-${DPDK_VERSION}.tar.xz -C /src --strip-components=1 \
+RUN --network=none tar -xf /src/dpdk-${DPDK_VERSION}.tar.xz -C /src/dpdk --strip-components=1 \
         && rm /src/dpdk-${DPDK_VERSION}.tar.xz
-ARG TARGETARCH
-RUN --network=none case "${TARGETARCH}" in \
-        amd64) CPU_SET="x86-64-v2" ;; \
-        arm64) CPU_SET="armv8-a" ;; \
-        arm) CPU_SET="armv7-a" ;; \
-        *) CPU_SET="generic" ;; \
-    esac && \
+RUN --network=none \
     meson setup \
         --prefix=/usr \
         --libdir=lib/$(gcc -print-multiarch) \
-        --buildtype=release \
-        -Dauto_features=enabled \
+        --buildtype=plain \
+        -Ddisable_apps="*" \
+        -Denable_libs="bbdev,bitratestats,bpf,cmdline,cryptodev,dmadev,gro,gso,hash,ip_frag,latencystats,member,meter,metrics,pcapng,pdump,security,stack,vhost" \
+        -Denable_drivers="baseband/acc,bus/auxiliary,bus/pci,bus/vdev,bus/vmbus,common/iavf,common/mlx5,common/nfp,mempool/ring,net/bnxt,net/e1000,net/enic,net/failsafe,net/i40e,net/iavf,net/ice,net/ixgbe,net/mlx5,net/netvsc,net/nfp,net/qede,net/ring,net/tap,net/vdev_netvsc,net/vhost,net/virtio" \
         -Ddefault_library=static \
-        -Dcpu_instruction_set=${CPU_SET} \
+        -Dcpu_instruction_set=generic \
+        -Dmax_ethports=1024 \
+        -Dmax_numa_nodes=8 \
         build
 RUN --network=none ninja -C build
 RUN --network=none meson test -C build --suite fast-tests
-RUN --network=none meson install -C build --destdir /out
+RUN --network=none meson install -C build --destdir /out/dpdk
 
 FROM builder AS openvswitch
+WORKDIR /src/ovs
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
         autoconf \
@@ -64,7 +65,7 @@ RUN apt-get update && \
         python3 \
         quilt
 ARG OVS_COMMIT=fcc4d37f69204819ca4f7456c3dd7ee218d8fbeb
-ADD https://github.com/openvswitch/ovs.git#${OVS_COMMIT} /src
+ADD https://github.com/openvswitch/ovs.git#${OVS_COMMIT} /src/ovs
 COPY patches /patches
 RUN --network=none \
     QUILT_PATCHES=/patches \
@@ -72,34 +73,28 @@ RUN --network=none \
     QUILT_PATCH_OPTS="--unified -p1" \
     quilt push -a --fuzz=0 --leave-rejects
 RUN --network=none ./boot.sh
-COPY --from=dpdk /out /
-ARG TARGETARCH
-RUN --network=none case "${TARGETARCH}" in \
-        amd64) MARCH="x86-64-v2" ;; \
-        arm64) MARCH="armv8-a" ;; \
-        arm) MARCH="armv7-a" ;; \
-        *) MARCH="native" ;; \
-    esac && \
+COPY --from=dpdk /out/dpdk /
+RUN --network=none \
     ./configure \
         --prefix=/usr \
         --localstatedir=/var \
         --sysconfdir=/etc \
-        --with-dpdk=static \
-        CFLAGS="-O2 -march=${MARCH}"
+        --with-dpdk=static
 RUN --network=none make -j$(nproc)
 RUN --network=none make check TESTSUITEFLAGS=-j$(nproc)
-RUN --network=none make install DESTDIR=/out
+RUN --network=none make install DESTDIR=/out/ovs
 
 FROM ${FROM}
 ADD --chmod=755 https://github.com/krallin/tini/releases/download/v0.19.0/tini /tini
 RUN groupadd -r -g 42424 openvswitch && \
-	useradd -r -g openvswitch -u 42424 openvswitch
+    useradd -r -g openvswitch -u 42424 openvswitch
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
+        iproute2 \
         iptables \
         jq \
-        libatomic1 \
         libarchive13t64 \
+        libatomic1 \
         libbpf1 \
         libbsd0 \
         libc6 \
@@ -109,11 +104,11 @@ RUN apt-get update && \
         libjansson4 \
         libnuma1 \
         libpcap0.8t64 \
-        iproute2 \
         libssl3t64 \
+        libunbound8 \
         libxdp1 \
         python3-netifaces \
         tcpdump && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-COPY --from=openvswitch /out /
+COPY --from=openvswitch /out/ovs /
