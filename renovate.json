@@ -13,6 +13,19 @@
         "Dockerfile"
       ],
       "matchStrings": [
+        "ARG DPDK_VERSION=(?<currentValue>.*)"
+      ],
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "DPDK/dpdk",
+      "versioningTemplate": "semver",
+      "extractVersionTemplate": "^v(?<version>.*)$"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "Dockerfile"
+      ],
+      "matchStrings": [
         "ARG OVS_COMMIT=(?<currentDigest>.*)"
       ],
       "datasourceTemplate": "git-refs",
@@ -26,10 +39,10 @@
         "Dockerfile"
       ],
       "matchStrings": [
-        "ARG DPDK_VERSION=(?<currentValue>.*)"
+        "ARG OVSINIT_VERSION=(?<currentValue>.*)"
       ],
       "datasourceTemplate": "github-tags",
-      "depNameTemplate": "DPDK/dpdk",
+      "depNameTemplate": "vexxhost/ovsinit",
       "versioningTemplate": "semver",
       "extractVersionTemplate": "^v(?<version>.*)$"
     }
