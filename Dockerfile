@@ -111,7 +111,7 @@ RUN apt-get update && \
         tcpdump && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-ARG OVSINIT_VERSION=0.1.0
+ARG OVSINIT_VERSION=0.2.0
 ARG TARGETOS
 ARG TARGETARCH
 ADD --chmod=755 https://github.com/vexxhost/ovsinit/releases/download/v${OVSINIT_VERSION}/ovsinit_v${OVSINIT_VERSION}_${TARGETOS}_${TARGETARCH} /usr/bin/ovsinit
