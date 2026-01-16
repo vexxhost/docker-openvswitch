@@ -64,7 +64,7 @@ RUN apt-get update && \
         openssl \
         python3 \
         quilt
-ARG OVS_COMMIT=adcf7b4687e20c52f226724ddc945a66149a9305
+ARG OVS_COMMIT=75ca1ad4d578fbca04b4fdfcf6c43f8e48b15c9d
 ADD https://github.com/openvswitch/ovs.git#${OVS_COMMIT} /src/ovs
 COPY patches /patches
 RUN --network=none \
