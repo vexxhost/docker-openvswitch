@@ -1,0 +1,37 @@
+From: Mohammed Naser <mnaser@vexxhost.com>
+Date: Fri, 3 Jul 2026 12:00:00 -0400
+Subject: [PATCH] netlink-socket: Increase Netlink receive buffer to 16 MiB
+
+Open vSwitch uses Netlink sockets to receive datapath upcalls from the
+kernel. Flow setup can be bursty, so a short scheduling delay in userspace
+can leave a large number of upcall messages queued on the receive socket.
+
+Increase the requested receive buffer from 4 MiB to 16 MiB. Linux accounts
+approximately twice the requested socket receive buffer size, so this gives
+the upcall path materially more burst headroom while keeping the default
+reasonable for deployments with per-CPU upcall dispatch enabled.
+
+This follows the same mitigation pattern as upstream commits that raised
+the Netlink receive buffer from the kernel default to 1 MiB and then from
+1 MiB to 4 MiB.
+
+Signed-off-by: Mohammed Naser <mnaser@vexxhost.com>
+---
+ lib/netlink-socket.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/netlink-socket.c b/lib/netlink-socket.c
+index 534bb5061..c79cd3b26 100644
+--- a/lib/netlink-socket.c
++++ b/lib/netlink-socket.c
+@@ -178,7 +178,7 @@ nl_sock_create(int protocol, struct nl_sock **sockp)
+     sock->protocol = protocol;
+     sock->next_seq = 1;
+ 
+-    rcvbuf = 1024 * 1024 * 4;
++    rcvbuf = 1024 * 1024 * 16;
+ #ifdef _WIN32
+     sock->rcvbuf = rcvbuf;
+     retval = get_sock_pid_from_kernel(sock);
+-- 
+2.34.1
