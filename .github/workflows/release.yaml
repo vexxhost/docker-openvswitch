@@ -1,0 +1,41 @@
+name: release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  draft-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Checkout Open vSwitch
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: openvswitch/ovs
+          path: ovs
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up uv
+        uses: step-security/setup-uv@479ad0a90c4286eda3535eb7db396ed723b63fb7 # v8.1.0
+        with:
+          enable-cache: true
+
+      - name: Create or update draft release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          uv run hack/release.py --self-test
+          uv run hack/release.py
