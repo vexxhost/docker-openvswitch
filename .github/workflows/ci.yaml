@@ -31,7 +31,7 @@ jobs:
         with:
           images: ghcr.io/vexxhost/openvswitch
       - uses: step-security/depot-setup-action@b4aca7ffc00ee3722a62991ae7a7f32f20ea225a # v1.7.1
-      - uses: step-security/docker-login-action@c3e677aae8393bc9c81cfdf9709648720ea4bd4d # v3.6.0
+      - uses: step-security/docker-login-action@6aa05fe688caf2c58e784663f01b3415ced503e8 # v3.7.0
         if: ${{ github.event_name != 'pull_request' }}
         with:
           registry: ghcr.io
