@@ -85,7 +85,9 @@ RUN --network=none make check TESTSUITEFLAGS=-j$(nproc)
 RUN --network=none make install DESTDIR=/out/ovs
 
 FROM ${FROM}
-ADD --chmod=755 https://github.com/krallin/tini/releases/download/v0.19.0/tini /tini
+ARG TARGETARCH
+ARG TARGETOS
+ADD --chmod=755 https://github.com/krallin/tini/releases/download/v0.19.0/tini-${TARGETARCH} /tini
 RUN groupadd -r -g 42424 openvswitch && \
     useradd -r -g openvswitch -u 42424 openvswitch
 RUN apt-get update && \
@@ -112,7 +114,5 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 ARG OVSINIT_VERSION=0.3.0
-ARG TARGETOS
-ARG TARGETARCH
 ADD --chmod=755 https://github.com/vexxhost/ovsinit/releases/download/v${OVSINIT_VERSION}/ovsinit_v${OVSINIT_VERSION}_${TARGETOS}_${TARGETARCH} /usr/bin/ovsinit
 COPY --from=openvswitch /out/ovs /
