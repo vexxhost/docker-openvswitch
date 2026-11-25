@@ -29,7 +29,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up uv
-        uses: step-security/setup-uv@7e018fee7f2f085a7d0e76b2ae75727698cd887e # v10.3.0
+        uses: step-security/setup-uv@b49aac5576b90039e3e427495dda1a21aba6aaec # v10.3.3
         with:
           enable-cache: true
 
